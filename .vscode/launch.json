@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Calculator",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/c_src/main.exe",
+      "cwd": "${workspaceFolder}/c_src",
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "miDebuggerPath": "C:/msys64/ucrt64/bin/gdb.exe",   // adjust if gdb isn’t on PATH
+      "preLaunchTask": "build calculator"
+    }
+  ]
+}
