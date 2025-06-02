@@ -6,7 +6,7 @@ repos:
       - id: clang-format
         args: [--style=file]    # tells clang-format to read .clang-format
         files: \.(c|h)$         # only .c / .h (adjust for .cpp, .hpp, etc.)
-        exclude: (^|/)unity/    # <-- skip Unity test harness
+        exclude: (^|/)Unity/    # <-- skip Unity test harness
   - repo: https://github.com/psf/black
     rev: 24.3.0  # Use a specific version for reproducibility
     hooks:
