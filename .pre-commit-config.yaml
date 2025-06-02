@@ -1,0 +1,15 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v17.0.6            # pin exact version → reproducible everywhere
+    hooks:
+      - id: clang-format
+        args: [--style=file]    # tells clang-format to read .clang-format
+        files: \.(c|h)$         # only .c / .h (adjust for .cpp, .hpp, etc.)
+        exclude: (^|/)unity/    # <-- skip Unity test harness
+  - repo: https://github.com/psf/black
+    rev: 24.3.0  # Use a specific version for reproducibility
+    hooks:
+      - id: black
+        language_version: python3
+        files: ^python/|^tests_py/
