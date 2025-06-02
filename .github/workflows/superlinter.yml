@@ -22,3 +22,5 @@ jobs:
           VALIDATE_PYTHON: true
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Skip every file whose path contains "/unity/"
+          FILTER_REGEX_EXCLUDE: '^.*/unity/.*$'
