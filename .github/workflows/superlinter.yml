@@ -19,35 +19,14 @@ jobs:
       - name: Super-Linter
         uses: github/super-linter@v6
         env:
-          ############################################
-          # Core
-          ############################################
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: main
 
-          ############################################
-          # We want ONLY C and Python
-          ############################################
-          VALIDATE_ALL_CODEBASE: false   # <-- everything off by default
-          VALIDATE_C            : true   # clang-format (and cpplint if enabled)
-          VALIDATE_CLANG_FORMAT : true   # keep on; uses .clang-format below
-          VALIDATE_PYTHON       : true   # runs Black, Ruff, etc.
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_C            : true
+          VALIDATE_CLANG_FORMAT : true
+          VALIDATE_PYTHON       : true
 
-          ############################################
-          # Optional: narrow Python linters
-          # VALIDATE_PYTHON_BLACK : true
-          # VALIDATE_PYTHON_ISORT : true
-          # VALIDATE_PYTHON_FLAKE8: false
-          # VALIDATE_PYTHON_PYLINT: false
-          # VALIDATE_PYTHON_MYPY  : false
-          ############################################
-
-          ############################################
-          # clang-format must respect your style file
-          ############################################
           CLANG_FORMAT_STYLE: file
 
-          ############################################
-          # Skip Unity test harness
-          ############################################
           FILTER_REGEX_EXCLUDE: '^.*/Unity/.*$'
