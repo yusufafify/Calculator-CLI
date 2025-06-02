@@ -23,4 +23,4 @@ jobs:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Skip every file whose path contains "/unity/"
-          FILTER_REGEX_EXCLUDE: '^.*/unity/.*$'
+          FILTER_REGEX_EXCLUDE: '^.*/Unity/.*$'
