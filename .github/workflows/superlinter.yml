@@ -24,3 +24,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Skip every file whose path contains "/unity/"
           FILTER_REGEX_EXCLUDE: '^.*/Unity/.*$'
+          # ▶ tell clang-format to honour .clang-format ◀
+          CLANG_FORMAT_STYLE: file
