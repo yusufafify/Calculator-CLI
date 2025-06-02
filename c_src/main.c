@@ -3,16 +3,16 @@
  * @brief Command-line calculator demonstrating basic arithmetic operations.
  */
 
-#include "calculate.h"
-
 #include <math.h>
 #include <stdio.h>
 
+#include "calculate.h"
+
 int main(void) {
-  char  operator_char = '\0';
-  float first_nb      = 0.0f;
-  float second_nb     = 0.0f;
-  float answer        = NAN;
+  char operator_char = '\0';
+  float first_nb = 0.0f;
+  float second_nb = 0.0f;
+  float answer = NAN;
 
   printf("Enter the operator (+, -, *, /): ");
   if (scanf(" %c", &operator_char) != 1) {

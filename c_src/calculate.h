@@ -20,4 +20,4 @@ DLL_EXPORT float divide(float num1, float num2);
 }
 #endif
 
-#endif // CALCULATE_H
+#endif  // CALCULATE_H
