@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "calculate.h"
+#include "calculate_c.h"
 
 int main(void) {
   char operator_char = '\0';
