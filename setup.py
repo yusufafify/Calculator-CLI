@@ -1,52 +1,63 @@
-from setuptools import setup, Extension, find_packages
+from setuptools import setup
+from setuptools.command.install import install
 import os
+import subprocess
 
-# C extension module
-calculator_c = Extension(
-    'calculator_c',
-    sources=['c_src/calculate.c'],
-    include_dirs=['c_src'],
-)
+class MakefileCommand(install):
+    """Custom install command that runs make commands and generates run_cli.py."""
+    
+    def run(self):
+        # Run Makefile commands
+        print("Running Makefile to build the C library...")
+        try:
+            # Clean first
+            subprocess.check_call(['make', 'clean'])
+            # Build the shared library
+            subprocess.check_call(['make'])
+            # Install to site-packages
+            subprocess.check_call(['make', 'python-install'])
+            print("DLL installed to site-packages via Makefile")
+        except subprocess.CalledProcessError as e:
+            print(f"Error running make: {e}")
+            raise
+        
+        # Create run_cli.py if it doesn't exist
+        if not os.path.exists('run_cli.py'):
+            print("Creating run_cli.py...")
+            with open('run_cli.py', 'w') as f:
+                f.write('#!/usr/bin/env python\n')
+                f.write('"""\n')
+                f.write('Calculator CLI - Command line interface to the calculator\n')
+                f.write('\n')
+                f.write('This is a simple entry point script that allows running the calculator\n')
+                f.write('directly from the command line.\n')
+                f.write('"""\n')
+                f.write('\n')
+                f.write('import sys\n')
+                f.write('from python.cli import main\n')
+                f.write('\n')
+                f.write('if __name__ == "__main__":\n')
+                f.write('    try:\n')
+                f.write('        sys.exit(main())\n')
+                f.write('    except Exception as e:\n')
+                f.write('        print(f"Error: {e}", file=sys.stderr)\n')
+                f.write('        sys.exit(1)\n')
+            
+        # Run standard install
+        install.run(self)
 
-# Read README for long description
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
-
-# Read requirements
-with open("requirements.txt", "r", encoding="utf-8") as fh:
-    requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
-
+# Minimal setup configuration
 setup(
     name="calculator-cli",
     version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
     description="A CLI calculator with C backend for fast arithmetic operations",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/calculator-cli",
-    packages=find_packages(),
-    ext_modules=[calculator_c],
-    install_requires=requirements,
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: C",
-    ],
-    python_requires=">=3.7",
+    packages=['python'],
     entry_points={
         "console_scripts": [
-            "calculator-cli=python.main:main",
+            "calculator-cli=python.cli:main",
         ],
     },
-    include_package_data=True,
-    zip_safe=False,
+    cmdclass={
+        'install': MakefileCommand,
+    },
 )
