@@ -35,6 +35,6 @@ jobs:
 
       - name: Run C unit tests (Unity)
         run: |
-          gcc -I c_src -I tests_c/Unity tests_c/calculateTest.c tests_c/Unity/unity.c c_src/calculate.c -o tests_c/calculateTest.exe -lm
-          ./tests_c/calculateTest.exe -lm -DEXCLUDE_PYTHON_CODE
+          cd tests_c
+          gcc -o test_runner calculateTest.c Unity/unity.c ../c_src/calculate.c -I../c_src -IUnity -lm -DEXCLUDE_PYTHON_CODE 
         shell: bash
