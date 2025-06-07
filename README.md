@@ -2,18 +2,18 @@
 
 A cross-platform command-line calculator project.
 
-## Project Description
+## Project Scope
 
-A command-line calculator that performs: addition, subtraction, multiplication, and division with the following architecture:
+Candidates are required to implement a command-line calculator that performs: addition, subtraction, multiplication, and division with the following architecture:
 
 - **Backend Logic in C**
 - **Python Interface**
-- **Usable as a Python API**
+- **Usable as a Python API** (to be able to import it and use it in a Python environment)
 - **Also usable as a CLI tool**
 
 This project includes unit tests, code formatting, and automated linting. The C code provides the core calculation logic, which is accessible both as a Python API and as a standalone CLI tool. Code quality is enforced with pre-commit hooks and GitHub Actions.
 
-## Getting Started
+## Getting Started for New Developers
 
 Follow these steps to set up your development environment and ensure code quality from your first commit.
 
@@ -26,41 +26,67 @@ python -m venv .venv
 ### 2. Activate the Virtual Environment
 
 - **On Windows (Python 3.11+):**
-  ```sh
+  ```powershell
   .venv\Scripts\activate
   ```
 - **On Windows (Python <3.11):**
-  ```sh
+  ```powershell
   .venv\Scripts\activate.bat
   ```
 - **On macOS/Linux:**
-  ```sh
+  ```bash
   source .venv/bin/activate
   ```
 
-### 3. Install Pre-commit
+### 3. Install the Calculator Package
 
-After activating your virtual environment, run:
+```powershell
+pip install -e .
+```
 
-```sh
+This will:
+- Run the Makefile to build the C shared library
+- Install the package in development mode
+- Make the `calculator-cli` command available
+- Create `calculator_cli.egg-info` metadata
+
+
+
+### 4. Using the Calculator
+
+After installation, you can use the calculator in two ways:
+
+#### As a Python API:
+```python
+from python import Calculator
+
+calc = Calculator()
+result = calc.add(2, 3)  # Returns 5.0
+```
+
+#### As a CLI Tool:
+```powershell
+# run CLI'
+
+calculator-cli "2 + 3"
+
+# or calculate from python command
+python run_cli.py "2 + 3"
+
+# Or run the interactive mode:
+python run_cli.py -i
+```
+
+### 5. Development Tools
+
+```powershell
+# Install pre-commit
 pip install pre-commit
-```
-
-### 4. Install the Pre-commit Hook (One Time Only)
-
-```sh
 pre-commit install
-```
 
-### 5. Test Linting and Code Format
-
-To check all files for linting and formatting issues, run:
-
-```sh
+# Test linting
 pre-commit run --all-files --show-diff-on-failure
 ```
-
-This will show any issues and auto-fix code format where possible. Fix any remaining issues before committing.
 
 ---
 
