@@ -1,0 +1,156 @@
+# Compiled binaries and executables
+*.exe
+*.out
+*.app
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.pyd
+*.a
+*.lib
+
+# Test executables
+test_runner
+test_runner.exe
+test_simple
+test_simple.exe
+
+# Build directories
+build/
+dist/
+*.egg-info/
+Debug/
+Release/
+x64/
+x86/
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+
+# Python virtual environments
+venv/
+env/
+.env
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python package builds
+*.whl
+*.tar.gz
+*.egg
+
+# VS Code settings (keep some, ignore others)
+.vscode/settings.json
+.vscode/c_cpp_properties.json
+# Keep these VS Code files for team collaboration:
+# .vscode/tasks.json
+# .vscode/launch.json
+
+# Other IDE and editor files
+*.swp
+*.swo
+*~
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.tmp
+*.temp
+
+# Test outputs and coverage
+*.gcov
+*.gcda
+*.gcno
+htmlcov/
+.coverage
+.pytest_cache/
+.tox/
+.nox/
+
+# Logs and runtime files
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# C/C++ specific
+*.i*86
+*.x86_64
+*.hex
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Unity test framework generated files
+unity_fixture_internals.h
+
+# Backup and temporary files
+*.bak
+*.backup
+*~
+*.swp
+*.swo
+.tmp/
+temp/
+
+# Documentation build files
+docs/_build/
+site/
+
+# Configuration files with sensitive data
+config.ini
+secrets.json
+.secrets
+
+# Windows specific
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Linux specific
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Project specific compiled extensions
+calculator_c.cp*.pyd
+calculator_c.cp*.so
