@@ -6,11 +6,10 @@
 void setUp(void) {}
 void tearDown(void) {}
 
-void test_add(void)
-{
-    TEST_ASSERT_EQUAL_FLOAT(5.00, add(2.00, 3.00));
-    TEST_ASSERT_EQUAL_FLOAT(-1.0, add(-2.0, 1.0));
-    TEST_ASSERT_EQUAL_FLOAT(0.0, add(0.0, 0.0));
+void test_add(void) {
+  TEST_ASSERT_EQUAL_FLOAT(5.00, add(2.00, 3.00));
+  TEST_ASSERT_EQUAL_FLOAT(-1.0, add(-2.0, 1.0));
+  TEST_ASSERT_EQUAL_FLOAT(0.0, add(0.0, 0.0));
 }
 
 void test_subtract(void)
@@ -34,12 +33,11 @@ void test_divide(void)
     TEST_ASSERT_TRUE(isnan(divide(5.0, 0.0)));
 }
 
-int main(void)
-{
-    UNITY_BEGIN();
-    RUN_TEST(test_add);
-    RUN_TEST(test_subtract);
-    RUN_TEST(test_multiply);
-    RUN_TEST(test_divide);
-    return UNITY_END();
+int main(void) {
+  UNITY_BEGIN();
+  RUN_TEST(test_add);
+  RUN_TEST(test_subtract);
+  RUN_TEST(test_multiply);
+  RUN_TEST(test_divide);
+  return UNITY_END();
 }

@@ -1,9 +1,9 @@
-#include <stdio.h>
-#include <math.h>
 #include "calculate_c.h"
 #ifndef EXCLUDE_PYTHON_CODE
 #include "calculatePythonWrapper.h"
 #endif // EXCLUDE_PYTHON_CODE
+#include <stdio.h>
+#include <math.h>
 
 float add(float num1, float num2)
 {

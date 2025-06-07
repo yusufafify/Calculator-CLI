@@ -1,0 +1,40 @@
+name: Build and Test C Code
+# This workflow builds and tests C code using GitHub Actions.
+# It compiles the C shared library and runs unit tests using Unity.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test-C:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up C compiler
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y gcc make
+
+      - name: Install build tools (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+
+      - name: Build C shared library
+        run: make
+
+      - name: Build C main executable (optional)
+        run: |
+          gcc -g -I c_src c_src/main.c c_src/calculate.c -o c_src/main.exe
+        shell: bash
+
+      - name: Run C unit tests (Unity)
+        run: |
+          gcc -I c_src -I tests_c/Unity tests_c/calculateTest.c tests_c/Unity/unity.c c_src/calculate.c -o tests_c/calculateTest.exe -lm
+          ./tests_c/calculateTest.exe
+        shell: bash

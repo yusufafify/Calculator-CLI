@@ -1,0 +1,5 @@
+# .clang-format  –  mirrors Super-Linter’s default C profile
+BasedOnStyle: Google
+IndentWidth: 2
+ColumnLimit: 80
+AllowShortIfStatementsOnASingleLine: false

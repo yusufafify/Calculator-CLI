@@ -1,0 +1,32 @@
+name: Super Linter Workflow
+# This workflow runs the Super Linter to check code quality and style.
+# It validates C and Python code, ensuring adherence to coding standards.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Super-Linter
+        uses: github/super-linter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: main
+
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_C            : true
+          VALIDATE_CLANG_FORMAT : true
+          VALIDATE_PYTHON       : true
+
+          CLANG_FORMAT_STYLE: file
+
+          FILTER_REGEX_EXCLUDE: '^.*/Unity/.*$'
