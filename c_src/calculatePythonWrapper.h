@@ -13,4 +13,3 @@ PyObject* py_multiply(PyObject* self, PyObject* args);
 PyObject* py_divide(PyObject* self, PyObject* args);
 
 PyMODINIT_FUNC PyInit_calculator_c(void);
-
