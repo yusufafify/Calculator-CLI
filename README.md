@@ -37,6 +37,10 @@ python -m venv .venv
   ```bash
   source .venv/bin/activate
   ```
+- **Install Packages**
+  ```bash
+  pip install -r requiremnts.txt
+  ```
 
 ### 3. Install the Calculator Package
 
@@ -81,7 +85,6 @@ python run_cli.py -i
 
 ```powershell
 # Install pre-commit
-pip install pre-commit
 pre-commit install
 
 # Test linting
