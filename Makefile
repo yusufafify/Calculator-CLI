@@ -2,7 +2,7 @@
 
 # Compiler and flags
 CC = gcc
-CFLAGS = -I c_src -Wall -Werror -O2
+CFLAGS = -I c_src -Wall -Werror -O2 -lm -DEXCLUDE_PYTHON_CODE 
 
 # Source and output
 SRC = c_src/calculate.c
