@@ -39,7 +39,7 @@ python -m venv .venv
   ```
 - **Install Packages**
   ```bash
-  pip install -r requiremnts.txt
+  pip install -r requirements.txt
   ```
 
 ### 3. Install the Calculator Package
