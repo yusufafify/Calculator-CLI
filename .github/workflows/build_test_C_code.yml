@@ -30,7 +30,7 @@ jobs:
 
       - name: Build C main executable (optional)
         run: |
-          gcc -g -I c_src c_src/main.c c_src/calculate.c -o c_src/main.exe
+          gcc -g -I c_src c_src/main.c c_src/calculate.c -o c_src/main.exe -lm -DEXCLUDE_PYTHON_CODE 
         shell: bash
 
       - name: Run C unit tests (Unity)
