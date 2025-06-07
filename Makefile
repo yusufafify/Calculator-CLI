@@ -1,29 +1,92 @@
 # Makefile for calculator_cli
+# ---------------------------
 
-# Compiler and flags
-CC = gcc
-CFLAGS = -I c_src -Wall -Werror -O2 -lm -DEXCLUDE_PYTHON_CODE 
+# ── Compiler ────────────────────────────────────────────────────────────────────
+CC      ?= gcc
+CFLAGS  := -I c_src -Wall -Werror -O2 -lm -DEXCLUDE_PYTHON_CODE
+SRC     := c_src/calculate.c
 
-# Source and output
-SRC = c_src/calculate.c
+# ── Python / venv ───────────────────────────────────────────────────────────────
+PYTHON   ?= python
+VENV_DIR ?= .venv
 
-ifeq ($(OS),Windows_NT)
-    DLL = c_src/calculate.dll
-    DLL_CMD = $(CC) -shared -o $(DLL) $(SRC) $(CFLAGS)
-    CLEAN_CMD = del /Q c_src\*.dll 2>nul || true & del /Q c_src\*.exe 2>nul || true
-else
-    DLL = c_src/libcalculate.so
-    DLL_CMD = $(CC) -shared -fPIC -o $(DLL) $(SRC) $(CFLAGS)
-    CLEAN_CMD = rm -f c_src/*.so c_src/*.out
+# ── Platform-specific paths & commands ─────────────────────────────────────────
+ifeq ($(OS),Windows_NT)                      # ── WINDOWS ───────────────────────
+VENV_SITE_PACKAGES := $(VENV_DIR)/Lib/site-packages
+DEST_DIR           := $(VENV_SITE_PACKAGES)/calculator_c
+DLL                := c_src/calculate.dll
+
+DLL_CMD   = $(CC) -shared -o $(DLL) $(SRC) $(CFLAGS)
+MKDIR_CMD = if not exist "$(subst /,\,$(DEST_DIR))" mkdir "$(subst /,\,$(DEST_DIR))"
+COPY_CMD  = copy /Y "$(subst /,\,$(DLL))" "$(subst /,\,$(DEST_DIR))"
+CLEAN_CMD = del /Q c_src\*.dll 2>nul || true & del /Q c_src\*.exe 2>nul || true
+
+else                                         # ── LINUX / macOS ─────────────────
+# Ask the venv’s Python for its pure-lib directory → version-agnostic
+VENV_SITE_PACKAGES := $(shell $(PYTHON) - <<PY \
+import sysconfig, pathlib, sys; \
+print(pathlib.Path('$(VENV_DIR)').joinpath( \
+      'lib', f'python{sys.version_info.major}.{sys.version_info.minor}', \
+      'site-packages')); \
+PY)
+
+DEST_DIR := $(VENV_SITE_PACKAGES)/calculator_c
+DLL      := c_src/libcalculate.so
+
+DLL_CMD   = $(CC) -shared -fPIC -o $(DLL) $(SRC) $(CFLAGS)
+MKDIR_CMD = mkdir -p $(DEST_DIR)
+COPY_CMD  = cp $(DLL) $(DEST_DIR)
+CLEAN_CMD = rm -f c_src/*.so c_src/*.out
 endif
 
-# Default target
+# ── Build targets ──────────────────────────────────────────────────────────────
+.PHONY: all python-install clean
+
 all: $(DLL)
 
-# Build DLL/shared object for Python usage
 $(DLL): $(SRC)
 	$(DLL_CMD)
 
-# Clean build artifacts
+# ── Install library + Python shim into venv ────────────────────────────────────
+python-install: $(DLL)
+	$(MKDIR_CMD)
+	$(COPY_CMD)
+ifeq ($(OS),Windows_NT)
+	@echo from ctypes import CDLL, c_float > "$(subst /,\,$(DEST_DIR))\\__init__.py" 
+	@echo import os, sys >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll = CDLL(os.path.join(os.path.dirname(__file__), 'calculate.dll')) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.add.argtypes = [c_float, c_float] >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.add.restype = c_float >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.subtract.argtypes = [c_float, c_float] >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.subtract.restype = c_float >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.multiply.argtypes = [c_float, c_float] >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.multiply.restype = c_float >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.divide.argtypes = [c_float, c_float] >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.divide.restype = c_float >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo def add(a, b): return _dll.add(float(a), float(b)) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo def subtract(a, b): return _dll.subtract(float(a), float(b)) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo def multiply(a, b): return _dll.multiply(float(a), float(b)) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo def divide(a, b): return _dll.divide(float(a), float(b)) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+else
+	@echo from ctypes import CDLL, c_float > "$(DEST_DIR)/__init__.py"
+	@echo import os, sys >> "$(DEST_DIR)/__init__.py"
+	@echo _dll = CDLL(os.path.join(os.path.dirname(__file__), 'libcalculate.so')) >> "$(DEST_DIR)/__init__.py"
+	@echo _dll.add.argtypes = [c_float, c_float] >> "$(DEST_DIR)/__init__.py"
+	@echo _dll.add.restype = c_float >> "$(DEST_DIR)/__init__.py"
+	@echo _dll.subtract.argtypes = [c_float, c_float] >> "$(DEST_DIR)/__init__.py"
+	@echo _dll.subtract.restype = c_float >> "$(DEST_DIR)/__init__.py"
+	@echo _dll.multiply.argtypes = [c_float, c_float] >> "$(DEST_DIR)/__init__.py"
+	@echo _dll.multiply.restype = c_float >> "$(DEST_DIR)/__init__.py"
+	@echo _dll.divide.argtypes = [c_float, c_float] >> "$(DEST_DIR)/__init__.py"
+	@echo _dll.divide.restype = c_float >> "$(DEST_DIR)/__init__.py"
+	@echo def add(a, b): return _dll.add(float(a), float(b)) >> "$(DEST_DIR)/__init__.py"
+	@echo def subtract(a, b): return _dll.subtract(float(a), float(b)) >> "$(DEST_DIR)/__init__.py"
+	@echo def multiply(a, b): return _dll.multiply(float(a), float(b)) >> "$(DEST_DIR)/__init__.py"
+	@echo def divide(a, b): return _dll.divide(float(a), float(b)) >> "$(DEST_DIR)/__init__.py"
+endif
+	@echo DLL installed to Python environment as 'calculator_c'
+	@echo You can now use: import calculator_c
+
+# ── Clean ──────────────────────────────────────────────────────────────────────
 clean:
 	$(CLEAN_CMD)
