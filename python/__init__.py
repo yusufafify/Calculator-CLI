@@ -55,6 +55,8 @@ class Calculator:
     @staticmethod
     def divide(a: float, b: float) -> float:
         """Divide two numbers."""
+        if b == 0:
+            raise ZeroDivisionError("Division by zero")
         return calculator_c.divide(a, b)
 
     def calculate(self, expression: str) -> float:

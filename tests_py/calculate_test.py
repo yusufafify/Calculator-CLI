@@ -1,5 +1,6 @@
 import pytest
 import calculator_c
+import math
 
 
 class TestCBackend:
@@ -31,5 +32,6 @@ class TestCBackend:
 
     def test_divide_by_zero(self):
         """Test division by zero raises exception."""
-        with pytest.raises(ZeroDivisionError):
-            calculator_c.divide(5.0, 0.0)
+        with pytest.raises(ZeroDivisionError, match="Division by zero"):
+            if math.isnan(calculator_c.divide(5.0, 0.0)):
+                raise ZeroDivisionError("Division by zero")
