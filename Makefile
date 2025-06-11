@@ -87,6 +87,47 @@ endif
 	@echo DLL installed to Python environment as 'calculator_c'
 	@echo You can now use: import calculator_c
 
+
+
+# ── Test targets ───────────────────────────────────────────────────────────────
+test: test-c test-python
+	@echo ======================================
+	@echo All tests completed successfully!
+	@echo ======================================
+
+test-c:
+	@echo ======================================
+	@echo Running C unit tests...
+	@echo ======================================
+ifeq ($(OS),Windows_NT)
+	@cd tests_c && $(CC) -o test_runner.exe calculateTest.c Unity/unity.c ../c_src/calculate.c -I../c_src -IUnity -lm -DEXCLUDE_PYTHON_CODE
+	@cd tests_c && test_runner.exe
+	@cd tests_c && del /Q test_runner.exe 2>nul || true
+else
+	@cd tests_c && $(CC) -o test_runner calculateTest.c Unity/unity.c ../c_src/calculate.c -I../c_src -IUnity -lm -DEXCLUDE_PYTHON_CODE
+	@cd tests_c && ./test_runner
+	@cd tests_c && rm -f test_runner
+endif
+
+test-python: $(DLL) python-install
+	@echo ======================================
+	@echo Running Python unit tests...
+	@echo ======================================
+ifeq ($(OS),Windows_NT)
+	@if exist "$(VENV_DIR)\Scripts\python.exe" ( \
+		"$(VENV_DIR)\Scripts\python.exe" -m pytest tests_py/ -v \
+	) else ( \
+		$(PYTHON) -m pytest tests_py/ -v \
+	)
+else
+	@if [ -f "$(VENV_DIR)/bin/python" ]; then \
+		$(VENV_DIR)/bin/python -m pytest tests_py/ -v; \
+	else \
+		$(PYTHON) -m pytest tests_py/ -v; \
+	fi
+endif
+
+
 # ── Clean ──────────────────────────────────────────────────────────────────────
 clean:
 	$(CLEAN_CMD)
