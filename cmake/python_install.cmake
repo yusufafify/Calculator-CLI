@@ -1,14 +1,13 @@
-# Choose DLL name for python __init__.py
+# DLL name for Python __init__.py
 if(WIN32)
   set(DLL_NAME "libcalculate.dll")
 else()
   set(DLL_NAME "libcalculate.so")
 endif()
 
-# Find site-packages inside the current venv (assumes Python executable is in env)
+# Find site-packages inside the current venv
 execute_process(
-  COMMAND python -c
-  "import sysconfig, pathlib; print(sysconfig.get_path('purelib'))"
+  COMMAND python -c "import sysconfig; print(sysconfig.get_path('purelib'))"
   OUTPUT_VARIABLE SITE_PACKAGES
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
@@ -16,12 +15,8 @@ execute_process(
 set(DEST_DIR "${SITE_PACKAGES}/calculator_c")
 file(MAKE_DIRECTORY "${DEST_DIR}")
 
-# Copy from build output directory (assumes OUTPUT_BIN passed or use env var)
-if(WIN32)
-  file(COPY "${CMAKE_CURRENT_BINARY_DIR}/c_src/libcalculate.dll" DESTINATION "${DEST_DIR}")
-else()
-  file(COPY "${CMAKE_CURRENT_BINARY_DIR}/c_src/libcalculate.so" DESTINATION "${DEST_DIR}")
-endif()  #refractor, use variable  , update name in python wrapper
+# Copy the built shared library to the site-packages destination
+file(COPY "${CMAKE_CURRENT_BINARY_DIR}/c_src/${DLL_NAME}" DESTINATION "${DEST_DIR}")
 
 # Write __init__.py with injected DLL name
 file(WRITE "${DEST_DIR}/__init__.py" "

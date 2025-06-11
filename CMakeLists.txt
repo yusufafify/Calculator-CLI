@@ -52,5 +52,34 @@ add_custom_target(clean-lib
     COMMENT "Cleaning shared library files"
 )
 
+# Testing
+enable_testing()
 
-#where to install cmake and ninja
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS "tests_c/*.c")
+set(UNITY_SOURCES tests_c/unity/unity.c)
+
+add_executable(test_calculator ${TEST_SOURCES} ${UNITY_SOURCES})
+target_include_directories(test_calculator PRIVATE tests_c c_src)
+target_link_libraries(test_calculator PRIVATE calculate)
+
+# custom target to run C tests manually like a regular command
+add_custom_target(
+  run_c_tests
+  COMMAND ${CMAKE_COMMAND} -E env
+          "PATH=$<TARGET_FILE_DIR:calculate>;$ENV{PATH}"
+          $<TARGET_FILE:test_calculator>
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Running C unit tests"
+  DEPENDS test_calculator
+)
+
+# Python tests target
+find_package(Python REQUIRED COMPONENTS Interpreter)
+
+# Add target to run Python tests
+add_custom_target(
+  run_python_tests
+  COMMAND ${Python_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/tests_py -v
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Running Python unit tests with pytest"
+)
