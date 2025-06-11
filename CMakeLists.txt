@@ -4,9 +4,31 @@ project(calculator_c C)
 # Source file
 set(SRC c_src/calculate.c)
 
-# Find Python development environment (needed for Python.h)
+# Find Python development environment (needed for pip install, optional for deployment)
 find_package(Python REQUIRED COMPONENTS Development)
 include_directories(${Python_INCLUDE_DIRS})
+
+# Handle Python library linking carefully on Windows
+if(WIN32)
+    # Try to find the release version of Python library to avoid debug issues
+    if(Python_LIBRARIES)
+        # Check if we're trying to link against debug libraries
+        string(FIND "${Python_LIBRARIES}" "python3" HAS_PYTHON3)
+        string(FIND "${Python_LIBRARIES}" "_d.lib" HAS_DEBUG_LIB)
+        
+        if(HAS_DEBUG_LIB GREATER -1)
+            # Replace debug library with release library
+            string(REPLACE "_d.lib" ".lib" Python_LIBRARIES_RELEASE "${Python_LIBRARIES}")
+            if(EXISTS "${Python_LIBRARIES_RELEASE}")
+                set(Python_LIBRARIES "${Python_LIBRARIES_RELEASE}")
+                message(STATUS "Using release Python library: ${Python_LIBRARIES}")
+            endif()
+        endif()
+    endif()
+    set(PYTHON_AVAILABLE TRUE)
+else()
+    set(PYTHON_AVAILABLE TRUE)
+endif()
 
 # Output directory for compiled libraries
 set(OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/c_src")  
@@ -19,8 +41,13 @@ if(WIN32)
     add_library(${LIB_NAME} SHARED ${SRC})
     set_target_properties(${LIB_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}"     
-        OUTPUT_NAME "calculate"
+        OUTPUT_NAME "libcalculate"
+        PREFIX ""
     )
+    # Exclude Python code for standalone builds on Windows
+    if(SKIP_PYTHON_INSTALL)
+        target_compile_definitions(${LIB_NAME} PRIVATE EXCLUDE_PYTHON_CODE)
+    endif()
 else()
     add_library(${LIB_NAME} SHARED ${SRC})
     set_target_properties(${LIB_NAME} PROPERTIES
@@ -29,7 +56,18 @@ else()
     )
 endif()
 
-target_link_libraries(${LIB_NAME} PRIVATE ${Python_LIBRARIES})
+# Handle Python library linking based on build type
+if(SKIP_PYTHON_INSTALL)
+    # For deployment builds, don't link Python libraries on Windows to avoid debug issues
+    if(NOT WIN32 AND PYTHON_AVAILABLE)
+        target_link_libraries(${LIB_NAME} PRIVATE ${Python_LIBRARIES})
+    endif()
+else()
+    # For pip install, try to link Python libraries but handle debug library issues
+    if(PYTHON_AVAILABLE)
+        target_link_libraries(${LIB_NAME} PRIVATE ${Python_LIBRARIES})
+    endif()
+endif()
 
 # Path to final shared lib file (used in install and clean)
 if(WIN32)
@@ -38,12 +76,16 @@ else()
     set(OUTPUT_BIN "${OUTPUT_DIR}/libcalculate.so")
 endif()
 
-# Install target to copy the shared library into the Python venv
-add_custom_target(python-install ALL
-    COMMAND ${CMAKE_COMMAND} -E echo "Installing to Python virtual environment..."
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/python_install.cmake
-    DEPENDS ${LIB_NAME}
-)
+# Install target to copy the shared library into the Python venv (optional)
+# This can be disabled by setting -DSKIP_PYTHON_INSTALL=ON
+option(SKIP_PYTHON_INSTALL "Skip Python virtual environment installation" OFF)
+if(NOT SKIP_PYTHON_INSTALL)
+    add_custom_target(python-install ALL
+        COMMAND ${CMAKE_COMMAND} -E echo "Installing to Python virtual environment..."
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/python_install.cmake
+        DEPENDS ${LIB_NAME}
+    )
+endif()
 
 # Clean target to remove only the generated .dll or .so file
 add_custom_target(clean-lib
