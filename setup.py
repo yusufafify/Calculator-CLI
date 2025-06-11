@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import site
+import sysconfig
 
 # Read README for long description
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -16,17 +17,30 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 class BuildCLibrary(Command):
-    """Custom command to build the C library using make."""
-    description = "Build the C library with make commands"
-    user_options = []
+    """Custom command to build the C library using make or cmake and ninja."""
+    description = "Build the C library with make commands or cmake and ninja"
+    user_options = [
+    ('build-system=', None, 'Build system to use: "make" or "cmake"'),
+    ]
     
     def initialize_options(self):
-        pass
+        self.build_system = os.environ.get("BUILD_SYSTEM", "make").lower()
         
     def finalize_options(self):
-        pass
-        
+        self.build_system = self.build_system or os.environ.get("BUILD_SYSTEM", "make").lower()
+
     def run(self):
+        print(f"Selected build system: {self.build_system}")
+
+        if self.build_system == "cmake":
+            self.build_with_cmake()
+        elif self.build_system == "make":
+            self.build_with_make()
+        else:
+            print(f"Unknown build system: {self.build_system}")
+            sys.exit(1)
+
+    def build_with_make(self):
         """Run the make commands to build and install the C library."""
         print("Building C library with make...")
         try:
@@ -58,6 +72,37 @@ class BuildCLibrary(Command):
             print(f"Command failed with exit code {e.returncode}")
             sys.exit(1)
 
+    def build_with_cmake(self):
+        """Run the CMake and Ninja commands to build and install the C library."""
+        print("Building C library with cmake and ninja...")
+        try:
+            build_dir = "build"
+            os.makedirs(build_dir, exist_ok=True)
+
+            # Run CMake to generate Ninja build files
+            print("Running CMake configuration...")
+            subprocess.check_call(["cmake", "-S", ".", "-B", build_dir, "-G", "Ninja"])
+
+            # Run Ninja to build the project
+            print("Running Ninja build...")
+            subprocess.check_call(["ninja", "-C", build_dir])
+
+            # Check if the custom 'python-install' target exists for graceful handling of missing target
+            print("Checking for python-install target...")
+            result = subprocess.run(["ninja", "-C", build_dir, "-t", "targets"], capture_output=True, text=True)
+
+            # If found, run the 'python-install' target to copy the DLL/SO to site-packages
+            if "python-install" not in result.stdout:
+                print("'python-install' target not found in CMake. Skipping.")
+            else:
+                print("Running python-install...")
+                subprocess.check_call(["ninja", "-C", build_dir, "python-install"])
+
+        except Exception as e:
+            # If any step fails, print the error and exit with a failure code
+            print(f"CMake build failed: {e}")
+            sys.exit(1)
+
 class CustomInstall(install):
     """Custom install command that runs build_c first."""
     def run(self):
@@ -79,8 +124,6 @@ class CustomBuildPy(build_py):
 setup(
     name="calculator-cli",
     version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
     description="A CLI calculator with C backend for fast arithmetic operations",
     long_description=long_description,
     long_description_content_type="text/markdown",
