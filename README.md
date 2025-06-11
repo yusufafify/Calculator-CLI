@@ -54,9 +54,24 @@ This will:
 - Make the `calculator-cli` command available
 - Create `calculator_cli.egg-info` metadata
 
+### 4. Starting Sphinx docs
+
+```powershell
+sphinx-quickstart docs
+````
+To build the docs or make changes
+navigate to docs dir
+```
+make html
+```
+To run the Docs:
+  go live with index.html in your browser
+```
+cd docs\build\html
+```
 
 
-### 4. Using the Calculator
+### 5. Using the Calculator
 
 After installation, you can use the calculator in two ways:
 
@@ -81,7 +96,7 @@ python run_cli.py "2 + 3"
 python run_cli.py -i
 ```
 
-### 5. Development Tools
+### 6. Development Tools
 
 ```powershell
 # Install pre-commit
