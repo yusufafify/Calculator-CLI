@@ -163,7 +163,7 @@ cd ./web-cli
 npm i # install the needed dependencies
 npm start #start the development server
 ```
-copy the `localhost:3000` and paste it in the browser to test
+##### copy the `localhost:3000` and paste it in the browser to test
 ---
 
 For more details on building and testing the C and Python code, see the Makefile and workflow files in `.github/workflows/`.
