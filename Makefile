@@ -40,7 +40,7 @@ CLEAN_CMD = rm -f c_src/*.so c_src/*.out
 endif
 
 # ── Build targets ──────────────────────────────────────────────────────────────
-.PHONY: all python-install clean
+.PHONY: all python-install clean deploy deploy-test
 
 all: $(DLL)
 
@@ -128,6 +128,41 @@ else
 endif
 
 
+# ── Deploy targets ─────────────────────────────────────────────────────────────
+deploy: $(DLL)
+	@echo ======================================
+	@echo Building standalone executable...
+	@echo ======================================
+	$(PYTHON) deploy.py --build-system make --no-interactive
+
+deploy-test: deploy
+	@echo ======================================
+	@echo Testing executable...
+	@echo ======================================
+ifeq ($(OS),Windows_NT)
+	@if exist "dist\calculator-cli.exe" ( \
+		echo Testing calculator-cli.exe... && \
+		"dist\calculator-cli.exe" "2+2" \
+	) else ( \
+		echo ERROR: Executable not found \
+	)
+else
+	@if [ -f "dist/calculator-cli" ]; then \
+		echo "Testing calculator-cli..." && \
+		./dist/calculator-cli "2+2"; \
+	else \
+		echo "ERROR: Executable not found"; \
+	fi
+endif
+
 # ── Clean ──────────────────────────────────────────────────────────────────────
 clean:
 	$(CLEAN_CMD)
+	@echo Cleaning deployment artifacts...
+ifeq ($(OS),Windows_NT)
+	@if exist "dist" rmdir /S /Q dist 2>nul || true
+	@if exist "build" rmdir /S /Q build 2>nul || true
+	@del /Q *.spec 2>nul || true
+else
+	@rm -rf dist build *.spec 2>/dev/null || true
+endif

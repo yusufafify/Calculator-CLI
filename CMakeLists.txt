@@ -72,9 +72,17 @@ endif()
 # Path to final shared lib file (used in install and clean)
 if(WIN32)
     set(OUTPUT_BIN "${OUTPUT_DIR}/libcalculate.dll")
+    set(SOURCE_DIR_BIN "${CMAKE_CURRENT_SOURCE_DIR}/c_src/libcalculate.dll")
 else()
     set(OUTPUT_BIN "${OUTPUT_DIR}/libcalculate.so")
+    set(SOURCE_DIR_BIN "${CMAKE_CURRENT_SOURCE_DIR}/c_src/libcalculate.so")
 endif()
+
+# Copy built library to source directory for deployment compatibility
+add_custom_command(TARGET ${LIB_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${LIB_NAME}>" "${CMAKE_CURRENT_SOURCE_DIR}/c_src/"
+    COMMENT "Copying library to source directory for deployment"
+)
 
 # Install target to copy the shared library into the Python venv (optional)
 # This can be disabled by setting -DSKIP_PYTHON_INSTALL=ON
@@ -91,6 +99,8 @@ endif()
 add_custom_target(clean-lib
     COMMAND ${CMAKE_COMMAND} -E echo "Removing generated library..."
     COMMAND ${CMAKE_COMMAND} -E rm -f "${OUTPUT_BIN}"
+    COMMAND ${CMAKE_COMMAND} -E rm -f "${CMAKE_CURRENT_SOURCE_DIR}/c_src/libcalculate.dll"
+    COMMAND ${CMAKE_COMMAND} -E rm -f "${CMAKE_CURRENT_SOURCE_DIR}/c_src/libcalculate.so"
     COMMENT "Cleaning shared library files"
 )
 
