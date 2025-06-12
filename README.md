@@ -47,21 +47,21 @@ To use different build systems like make, cmake, or ninja, you must install them
 
 **Windows**
 **Make**
-Download from GnuWin32 or install via MSYS2.
+-Download from [Link Text](GnuWin32).
 
-Add the directory containing make.exe to your System or User PATH.
+-Add the directory containing make.exe to your System or User PATH.
 
 **CMake**
-Download the installer from cmake.org.
+-Download the installer from [Link Text](cmake.org).
 
-During installation, select the option to add CMake to system PATH or manually add the bin folder to your PATH.
+-During installation, select the option to add CMake to system PATH or manually add the bin folder to your PATH.
 
 **Ninja**
-Download ninja.exe from the Ninja GitHub releases.
+-Download ninja.exe from the [Link Text](Ninja GitHub releases).
 
-Create a folder (e.g., C:\Program Files\Ninja) and place ninja.exe inside.
+-Create a folder (e.g., C:\Program Files\Ninja) and place ninja.exe inside.
 
-Add that folder to your System or User PATH.
+-Add that folder to your System or User PATH.
 
 ⚠️ After updating your PATH, restart the terminal or your IDE for the changes to take effect.
 
