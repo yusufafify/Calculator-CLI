@@ -154,4 +154,17 @@ pre-commit run --all-files --show-diff-on-failure
 #### create the .exe file and can run as a standalone cli and added to the environment variables and run in any terminal on the device
 ---
 
+
+### 8. Using the web app
+
+```powershell
+# Deploy Commands
+cd ./web-cli
+npm i # install the needed dependencies
+npm start #start the development server
+```
+copy the `localhost:3000` and paste it in the browser to test
+#### create the .exe file and can run as a standalone cli and added to the environment variables and run in any terminal on the device
+---
+
 For more details on building and testing the C and Python code, see the Makefile and workflow files in `.github/workflows/`.
