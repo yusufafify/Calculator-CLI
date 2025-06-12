@@ -3,22 +3,48 @@
 
 # ── Compiler ────────────────────────────────────────────────────────────────────
 CC      ?= gcc
-CFLAGS  := -I c_src -Wall -Werror -O2 -lm -DEXCLUDE_PYTHON_CODE
+CFLAGS_BASE := -I c_src -Wall -Werror -O2 -lm
+CFLAGS_STANDALONE := $(CFLAGS_BASE) -DEXCLUDE_PYTHON_CODE
+CFLAGS_PYTHON := $(CFLAGS_BASE)
 SRC     := c_src/calculate.c
 
 # ── Python / venv ───────────────────────────────────────────────────────────────
 PYTHON   ?= python
 VENV_DIR ?= .venv
 
+# ── Python Development Libraries ───────────────────────────────────────────────
+# Find Python include directories and libraries for linking
+PYTHON_INCLUDE := $(shell $(PYTHON) -c "import sysconfig; print(sysconfig.get_path('include'))")
+PYTHON_LIBS := $(shell $(PYTHON) -c "import sysconfig; print(sysconfig.get_config_var('LIBS'))")
+PYTHON_LDFLAGS := $(shell $(PYTHON) -c "import sysconfig; print(sysconfig.get_config_var('LDFLAGS'))")
+
+ifeq ($(OS),Windows_NT)
+# On Windows, we need to link against python3X.lib
+PYTHON_VERSION := $(shell $(PYTHON) -c "import sys; print(f'{sys.version_info.major}{sys.version_info.minor}')")
+PYTHON_LIB_PATH := $(shell $(PYTHON) -c "import sysconfig; print(sysconfig.get_config_var('prefix'))")
+PYTHON_LINK_FLAGS := -I"$(PYTHON_INCLUDE)" -L"$(PYTHON_LIB_PATH)/libs" -lpython$(PYTHON_VERSION)
+else
+PYTHON_LINK_FLAGS := -I"$(PYTHON_INCLUDE)" $(PYTHON_LDFLAGS) $(PYTHON_LIBS)
+endif
+
 # ── Platform-specific paths & commands ─────────────────────────────────────────
 ifeq ($(OS),Windows_NT)                      # ── WINDOWS ───────────────────────
 VENV_SITE_PACKAGES := $(VENV_DIR)/Lib/site-packages
 DEST_DIR           := $(VENV_SITE_PACKAGES)/calculator_c
-DLL                := c_src/calculate.dll
+DLL_STANDALONE     := c_src/calculate.dll
+DLL_PYTHON         := c_src/calculator_c.dll
+DLL                := $(DLL_PYTHON)  # Default to Python extension DLL
 
-DLL_CMD   = $(CC) -shared -o $(DLL) $(SRC) $(CFLAGS)
+# Standalone DLL (no Python dependencies) 
+DLL_STANDALONE_CMD = $(CC) -shared -o $(DLL_STANDALONE) $(SRC) $(CFLAGS_STANDALONE)
+# Python extension DLL (with Python wrapper functions)
+DLL_PYTHON_CMD = $(CC) -shared -o $(DLL_PYTHON) $(SRC) $(CFLAGS_PYTHON) $(PYTHON_LINK_FLAGS)
+DLL_CMD = $(DLL_PYTHON_CMD)  # Default to building Python extension
+
 MKDIR_CMD = if not exist "$(subst /,\,$(DEST_DIR))" mkdir "$(subst /,\,$(DEST_DIR))"
-COPY_CMD  = copy /Y "$(subst /,\,$(DLL))" "$(subst /,\,$(DEST_DIR))"
+COPY_STANDALONE_CMD = copy /Y "$(subst /,\,$(DLL_STANDALONE))" "$(subst /,\,$(DEST_DIR))"
+COPY_PYTHON_CMD = copy /Y "$(subst /,\,$(DLL_PYTHON))" "$(subst /,\,$(DEST_DIR))"
+COPY_CMD = $(COPY_PYTHON_CMD)  # Default to copying Python extension
 CLEAN_CMD = del /Q c_src\*.dll 2>nul || true & del /Q c_src\*.exe 2>nul || true
 
 else                                         # ── LINUX / macOS ─────────────────
@@ -40,12 +66,24 @@ CLEAN_CMD = rm -f c_src/*.so c_src/*.out
 endif
 
 # ── Build targets ──────────────────────────────────────────────────────────────
-.PHONY: all python-install clean
+.PHONY: all python-install clean standalone python-dll
 
 all: $(DLL)
 
 $(DLL): $(SRC)
 	$(DLL_CMD)
+
+# Build standalone DLL (no Python dependencies)
+standalone: $(DLL_STANDALONE)
+
+$(DLL_STANDALONE): $(SRC)
+	$(DLL_STANDALONE_CMD)
+
+# Build Python extension DLL (with Python wrapper functions)
+python-dll: $(DLL_PYTHON)
+
+$(DLL_PYTHON): $(SRC)
+	$(DLL_PYTHON_CMD)
 
 # ── Install library + Python shim into venv ────────────────────────────────────
 python-install: $(DLL)
@@ -54,7 +92,7 @@ python-install: $(DLL)
 ifeq ($(OS),Windows_NT)
 	@echo from ctypes import CDLL, c_float > "$(subst /,\,$(DEST_DIR))\\__init__.py" 
 	@echo import os, sys >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
-	@echo _dll = CDLL(os.path.join(os.path.dirname(__file__), 'calculate.dll')) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll = CDLL(os.path.join(os.path.dirname(__file__), 'calculator_c.dll')) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 	@echo _dll.add.argtypes = [c_float, c_float] >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 	@echo _dll.add.restype = c_float >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 	@echo _dll.subtract.argtypes = [c_float, c_float] >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
