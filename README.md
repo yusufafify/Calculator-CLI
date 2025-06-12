@@ -49,6 +49,8 @@ pip install -e .
 ```
 
 This will:
+- Buidlding By default by makefile
+- to build with CMake Ninja `$env:BUILD_SYSTEM = "cmake"; pip install -e .`
 - Run the Makefile to build the C shared library
 - Install the package in development mode
 - Make the `calculator-cli` command available
@@ -86,7 +88,6 @@ result = calc.add(2, 3)  # Returns 5.0
 #### As a CLI Tool:
 ```powershell
 # run CLI'
-
 calculator-cli "2 + 3"
 
 # or calculate from python command
@@ -106,6 +107,20 @@ pre-commit install
 pre-commit run --all-files --show-diff-on-failure
 ```
 
+---
+
+
+### 6. Deploy Commands
+
+```powershell
+# Deploy Commands
+
+  python deploy.py                    # Interactive mode (choose build system)
+  python deploy.py --build-system make    # Use Make
+  python deploy.py --build-system cmake   # Use CMake
+  python deploy.py --no-interactive       # Auto-select build system
+```
+#### create the .exe file and can run as a standalone cli and added to the environment variables and run in any terminal on the device
 ---
 
 For more details on building and testing the C and Python code, see the Makefile and workflow files in `.github/workflows/`.
