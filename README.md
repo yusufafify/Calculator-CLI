@@ -42,21 +42,45 @@ python -m venv .venv
   pip install -r requirements.txt
   ```
 
-### 3. Install the Calculator Package
+### 3. Install Build Tools (Make, CMake, Ninja)
+To use different build systems like make, cmake, or ninja, you must install them and add them to your system's PATH.
+
+**Windows**
+**Make**
+Download from GnuWin32 or install via MSYS2.
+
+Add the directory containing make.exe to your System or User PATH.
+
+**CMake**
+Download the installer from cmake.org.
+
+During installation, select the option to add CMake to system PATH or manually add the bin folder to your PATH.
+
+**Ninja**
+Download ninja.exe from the Ninja GitHub releases.
+
+Create a folder (e.g., C:\Program Files\Ninja) and place ninja.exe inside.
+
+Add that folder to your System or User PATH.
+
+⚠️ After updating your PATH, restart the terminal or your IDE for the changes to take effect.
+
+### 4. Install the Calculator Package
 
 ```powershell
 pip install -e .
 ```
 
 This will:
-- Buidlding By default by makefile
-- to build with CMake Ninja `$env:BUILD_SYSTEM = "cmake"; pip install -e .`
-- Run the Makefile to build the C shared library
+- Build By default by makefile
+- to build with CMake and Ninja `$env:BUILD_SYSTEM = "cmake"; pip install -e .`
+- This will:
+- Run the Makefile or Cmake/ Ninja according to choice to build the C shared library
 - Install the package in development mode
 - Make the `calculator-cli` command available
 - Create `calculator_cli.egg-info` metadata
 
-### 4. Starting Sphinx docs
+### 5. Starting Sphinx docs
 
 ```powershell
 sphinx-quickstart docs
@@ -73,7 +97,7 @@ cd docs\build\html
 ```
 
 
-### 5. Using the Calculator
+### 6. Using the Calculator
 
 After installation, you can use the calculator in two ways:
 
@@ -97,7 +121,7 @@ python run_cli.py "2 + 3"
 python run_cli.py -i
 ```
 
-### 6. Development Tools
+### 7. Development Tools
 
 ```powershell
 # Install pre-commit
@@ -110,7 +134,7 @@ pre-commit run --all-files --show-diff-on-failure
 ---
 
 
-### 6. Deploy Commands
+### 7. Deploy Commands
 
 ```powershell
 # Deploy Commands
