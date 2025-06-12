@@ -17,6 +17,15 @@ This project includes unit tests, code formatting, and automated linting. The C 
 
 Follow these steps to set up your development environment and ensure code quality from your first commit.
 
+### 0. Install MSYS2 and Configure It in VS Code (Windows Only)
+
+To build C code with `make` or `gcc` on Windows, install [MSYS2](https://www.msys2.org/) and configure it as the compiler in VS Code.
+
+  **Download and Install MSYS2**  
+   - Visit the official site: [https://www.msys2.org](https://www.msys2.org)  
+   - Download the installer and follow the setup instructions.
+     
+
 ### 1. Create a New Python Virtual Environment
 
 ```sh
@@ -43,27 +52,25 @@ python -m venv .venv
   ```
 
 ### 3. Install Build Tools (Make, CMake, Ninja)
-To use different build systems like make, cmake, or ninja, you must install them and add them to your system's PATH.
 
-**Windows**
-**Make**
--Download from [Link Text](GnuWin32).
+To use different build systems like `make`, `cmake`, or `ninja`, you must install them and add them to your system's `PATH`.
 
--Add the directory containing make.exe to your System or User PATH.
+#### 🪟 Windows
 
-**CMake**
--Download the installer from [Link Text](cmake.org).
+##### ✅ Make
+- Download from [GnuWin32](http://gnuwin32.sourceforge.net/packages/make.htm) or install via [MSYS2](https://www.msys2.org/).
+- Add the directory containing `make.exe` to your **System** or **User** `PATH`.
 
--During installation, select the option to add CMake to system PATH or manually add the bin folder to your PATH.
+##### ✅ CMake
+- Download the installer from [cmake.org](https://cmake.org/download/).
+- During installation, select the option to **add CMake to system PATH**, or manually add the `bin` folder to your `PATH`.
 
-**Ninja**
--Download ninja.exe from the [Link Text](Ninja GitHub releases).
+##### ✅ Ninja
+- Download from the [Ninja GitHub Releases](https://github.com/ninja-build/ninja/releases).
+- Create a folder (e.g., `C:\Program Files\Ninja`) and place `ninja.exe` inside it.
+- Add that folder to your **System** or **User** `PATH`.
 
--Create a folder (e.g., C:\Program Files\Ninja) and place ninja.exe inside.
-
--Add that folder to your System or User PATH.
-
-⚠️ After updating your PATH, restart the terminal or your IDE for the changes to take effect.
+> ⚠️ After updating your `PATH`, restart your terminal or IDE for the changes to take effect.
 
 ### 4. Install the Calculator Package
 
