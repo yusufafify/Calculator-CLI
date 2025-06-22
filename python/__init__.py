@@ -59,11 +59,16 @@ class Calculator:
             raise ZeroDivisionError("Division by zero")
         return calculator_c.divide(a, b)
 
+    @staticmethod
+    def power(a: float, b: float) -> float:
+        """power function"""
+        return calculator_c.power(a, b)
+
     def calculate(self, expression: str) -> float:
         """Parse and calculate a simple expression."""
         expression = expression.replace(" ", "")
 
-        for op in ["+", "-", "*", "/"]:
+        for op in ["+", "-", "*", "/", "^"]:
             if op in expression:
                 parts = expression.split(op)
                 if len(parts) == 2:
@@ -77,6 +82,8 @@ class Calculator:
                             return self.multiply(a, b)
                         elif op == "/":
                             return self.divide(a, b)
+                        elif op == "^":
+                            return self.power(a, b)
                     except ValueError:
                         raise ValueError("Invalid numbers in expression")
 

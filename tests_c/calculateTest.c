@@ -31,11 +31,19 @@ void test_divide(void) {
   TEST_ASSERT_TRUE(isnan(divide(5.0, 0.0)));
 }
 
+void test_power(void) {
+  TEST_ASSERT_EQUAL_FLOAT(8.0, power(2.0, 3.0));
+  TEST_ASSERT_EQUAL_FLOAT(-2.0, power(-2.0, 1.0));
+  TEST_ASSERT_EQUAL_FLOAT(0.0, power(0.0, 5.0));
+}
+
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_add);
   RUN_TEST(test_subtract);
   RUN_TEST(test_multiply);
   RUN_TEST(test_divide);
+  RUN_TEST(test_power);
+
   return UNITY_END();
 }

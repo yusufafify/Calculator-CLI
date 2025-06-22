@@ -30,6 +30,11 @@ class TestCBackend:
         assert calculator_c.divide(-6.0, 2.0) == -3.0
         assert calculator_c.divide(1.0, 3.0) == pytest.approx(0.333333, rel=1e-5)
 
+    def test_power(self):
+        """Test division function."""
+        assert calculator_c.power(2.0, 3.0) == 8.0
+        assert calculator_c.power(-2.0, 1.0) == -2.0
+
     def test_divide_by_zero(self):
         """Test division by zero raises exception."""
         with pytest.raises(ZeroDivisionError, match="Division by zero"):

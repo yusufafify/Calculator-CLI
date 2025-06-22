@@ -63,10 +63,13 @@ ifeq ($(OS),Windows_NT)
 	@echo _dll.multiply.restype = c_float >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 	@echo _dll.divide.argtypes = [c_float, c_float] >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 	@echo _dll.divide.restype = c_float >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.power.argtypes = [c_float, c_float] >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo _dll.power.restype = c_float >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 	@echo def add(a, b): return _dll.add(float(a), float(b)) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 	@echo def subtract(a, b): return _dll.subtract(float(a), float(b)) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 	@echo def multiply(a, b): return _dll.multiply(float(a), float(b)) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 	@echo def divide(a, b): return _dll.divide(float(a), float(b)) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
+	@echo def power(a, b): return _dll.power(float(a), float(b)) >> "$(subst /,\,$(DEST_DIR))\\__init__.py"
 else
 	@echo from ctypes import CDLL, c_float > "$(DEST_DIR)/__init__.py"
 	@echo import os, sys >> "$(DEST_DIR)/__init__.py"
@@ -83,6 +86,8 @@ else
 	@echo def subtract(a, b): return _dll.subtract(float(a), float(b)) >> "$(DEST_DIR)/__init__.py"
 	@echo def multiply(a, b): return _dll.multiply(float(a), float(b)) >> "$(DEST_DIR)/__init__.py"
 	@echo def divide(a, b): return _dll.divide(float(a), float(b)) >> "$(DEST_DIR)/__init__.py"
+	@echo def power(a, b): return _dll.power(float(a), float(b)) >> "$(DEST_DIR)/__init__.py"
+
 endif
 	@echo DLL installed to Python environment as 'calculator_c'
 	@echo You can now use: import calculator_c
