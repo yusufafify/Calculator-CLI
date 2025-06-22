@@ -14,6 +14,7 @@ DLL_EXPORT float add(float num1, float num2);
 DLL_EXPORT float subtract(float num1, float num2);
 DLL_EXPORT float multiply(float num1, float num2);
 DLL_EXPORT float divide(float num1, float num2);
+DLL_EXPORT float power(float num1, float power);
 
 #ifdef __cplusplus
 }

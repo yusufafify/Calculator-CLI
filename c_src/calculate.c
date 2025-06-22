@@ -18,6 +18,8 @@ float divide(float num1, float num2) {
   }
 }
 
+float power(float num1, float power) { return pow(num1, power); }
+
 #ifndef EXCLUDE_PYTHON_CODE
 /* Python wrapper functions */
 
@@ -57,12 +59,21 @@ PyObject* py_divide(PyObject* self, PyObject* args) {
   return PyFloat_FromDouble(divide(a, b));
 }
 
+PyObject* py_power(PyObject* self, PyObject* args) {
+  double a, b;
+  if (!PyArg_ParseTuple(args, "dd", &a, &b)) {
+    return NULL;
+  }
+  return PyFloat_FromDouble(power(a, b));
+}
+
 // Method definitions
 static PyMethodDef calculator_methods[] = {
     {"add", py_add, METH_VARARGS, "Add two numbers"},
     {"subtract", py_subtract, METH_VARARGS, "Subtract two numbers"},
     {"multiply", py_multiply, METH_VARARGS, "Multiply two numbers"},
     {"divide", py_divide, METH_VARARGS, "Divide two numbers"},
+    {"power", py_power, METH_VARARGS, "power function"},
     {NULL, NULL, 0, NULL}};
 
 // Module definition

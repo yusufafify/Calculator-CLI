@@ -48,7 +48,7 @@ def interactive_mode(calc):
     """Run calculator in interactive mode."""
     print("Calculator CLI - Interactive Mode")
     print("Enter mathematical expressions or 'quit' to exit")
-    print("Examples: 2 + 3, 10 * 5, 20 / 4")
+    print("Examples: 2 + 3, 10 * 5, 20 / 4", "2^4")
     print("-" * 40)
 
     while True:
